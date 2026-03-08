@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public class RedisLocationServiceImpl implements LocationService{
 
-    private static final String DRIVER_GRO_OPS_KEY = "drivers";
+    private static final String DRIVER_GEO_OPS_KEY = "drivers";
     private static final Double SEARCH_RADIUS=5.0;
 
     private final StringRedisTemplate stringRedisTemplate;
@@ -26,7 +26,7 @@ public class RedisLocationServiceImpl implements LocationService{
     public Boolean saveDriverLocation(String driverId, Double latitude, Double longitude) {
         GeoOperations<String,String> geoOps =stringRedisTemplate.opsForGeo();
         geoOps.add(
-                DRIVER_GRO_OPS_KEY,
+                DRIVER_GEO_OPS_KEY,
                 new RedisGeoCommands.GeoLocation<>(
                         driverId,
                         new Point(latitude, longitude)));
@@ -38,11 +38,15 @@ public class RedisLocationServiceImpl implements LocationService{
         GeoOperations<String,String> geoOps =stringRedisTemplate.opsForGeo();
         Distance distance = new Distance(SEARCH_RADIUS, Metrics.KILOMETERS);
         Circle within = new Circle(new Point(latitude,longitude),distance);
-        GeoResults<RedisGeoCommands.GeoLocation<String>> results = geoOps.radius(DRIVER_GRO_OPS_KEY,within);
+        GeoResults<RedisGeoCommands.GeoLocation<String>> results = geoOps.radius(DRIVER_GEO_OPS_KEY,within);
 
         List<DriverLocationDto> drivers=new ArrayList<>();
         for(GeoResult<RedisGeoCommands.GeoLocation<String>> result:results){
-            Point point = geoOps.position(DRIVER_GRO_OPS_KEY,result.getContent().getName()).get(0);
+            List<Point> positions = geoOps.position(DRIVER_GEO_OPS_KEY, result.getContent().getName());
+            if(positions == null || positions.isEmpty()){
+                continue;
+            }
+            Point point = positions.get(0);
             DriverLocationDto driverLocation = DriverLocationDto.builder()
                     .driverId(result.getContent().getName())
                     .latitude(point.getX())
@@ -53,3 +57,5 @@ public class RedisLocationServiceImpl implements LocationService{
         return drivers;
     }
 }
+
+
