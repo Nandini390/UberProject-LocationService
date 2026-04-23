@@ -1,5 +1,6 @@
 package org.example.uberprojectlocationservice.controllers;
 
+import jakarta.validation.Valid;
 import org.example.uberprojectlocationservice.dto.DriverLocationDto;
 import org.example.uberprojectlocationservice.dto.NearbyDriversRequestDto;
 import org.example.uberprojectlocationservice.dto.saveDriverLocationRequestDto;
@@ -23,24 +24,26 @@ public class LocationController {
     }
 
     @PostMapping("/drivers")
-    public ResponseEntity<Boolean> saveDriverLocation(@RequestBody saveDriverLocationRequestDto saveDriverLocationRequestDto){
-         try{
-             boolean response= locationService.saveDriverLocation(saveDriverLocationRequestDto.getDriverId(), saveDriverLocationRequestDto.getLatitude(), saveDriverLocationRequestDto.getLongitude());
-             return new ResponseEntity<>(response, HttpStatus.CREATED);
-         } catch (Exception e) {
-             return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
-         }
+    public ResponseEntity<Boolean> saveDriverLocation(@Valid @RequestBody saveDriverLocationRequestDto saveDriverLocationRequestDto){
+         boolean response= locationService.saveDriverLocation(saveDriverLocationRequestDto.getDriverId(), saveDriverLocationRequestDto.getLatitude(), saveDriverLocationRequestDto.getLongitude());
+         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/drivers/{driverId}/online")
+    public ResponseEntity<Boolean> markDriverOnline(@PathVariable String driverId) {
+        return new ResponseEntity<>(locationService.markDriverOnline(driverId), HttpStatus.OK);
+    }
+
+    @PostMapping("/drivers/{driverId}/offline")
+    public ResponseEntity<Boolean> markDriverOffline(@PathVariable String driverId) {
+        return new ResponseEntity<>(locationService.markDriverOffline(driverId), HttpStatus.OK);
     }
 
 
 
     @PostMapping("/nearby/drivers")
-    public ResponseEntity<List<DriverLocationDto>> getNearbyDrivers(@RequestBody NearbyDriversRequestDto nearbyDriversRequestDto){
-        try{
-            List<DriverLocationDto> drivers=locationService.getNearbyDrivers(nearbyDriversRequestDto.getLatitude(), nearbyDriversRequestDto.getLongitude());
-            return new ResponseEntity<>(drivers,HttpStatus.OK);
-        }catch(Exception e){
-            return new ResponseEntity<>(new ArrayList<>(),HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<List<DriverLocationDto>> getNearbyDrivers(@Valid @RequestBody NearbyDriversRequestDto nearbyDriversRequestDto){
+        List<DriverLocationDto> drivers=locationService.getNearbyDrivers(nearbyDriversRequestDto.getLatitude(), nearbyDriversRequestDto.getLongitude());
+        return new ResponseEntity<>(drivers,HttpStatus.OK);
     }
 }

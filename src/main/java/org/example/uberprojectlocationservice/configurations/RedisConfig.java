@@ -14,8 +14,8 @@ public class RedisConfig {
     public RedisConnectionFactory redisConnectionFactory(){
         JedisConnectionFactory jedisConFactory = new JedisConnectionFactory();
         jedisConFactory.setHostName("localhost");
-        jedisConFactory.setPort(6379);
-        return new JedisConnectionFactory();
+        jedisConFactory.setPort(6379);  //Default port for Redis
+        return jedisConFactory;
     }
 
     @Bean
