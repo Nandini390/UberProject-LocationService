@@ -4,6 +4,7 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +25,7 @@ public class saveDriverLocationRequestDto {
     @DecimalMin(value = "-180.0", message = "longitude must be >= -180")
     @DecimalMax(value = "180.0", message = "longitude must be <= 180")
     Double longitude;
+    String bookingId;
+    @Pattern(regexp = "^(TO_PICKUP|ON_TRIP|IDLE)?$", message = "trackingStage must be TO_PICKUP, ON_TRIP, or IDLE")
+    String trackingStage;
 }

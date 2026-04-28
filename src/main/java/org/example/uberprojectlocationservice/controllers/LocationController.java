@@ -1,16 +1,16 @@
 package org.example.uberprojectlocationservice.controllers;
 
 import jakarta.validation.Valid;
+import org.example.uberprojectlocationservice.dto.BookingTripMetricsDto;
 import org.example.uberprojectlocationservice.dto.DriverLocationDto;
+import org.example.uberprojectlocationservice.dto.DriverTrackingDto;
 import org.example.uberprojectlocationservice.dto.NearbyDriversRequestDto;
 import org.example.uberprojectlocationservice.dto.saveDriverLocationRequestDto;
 import org.example.uberprojectlocationservice.services.LocationService;
-import org.springframework.data.geo.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,7 +25,13 @@ public class LocationController {
 
     @PostMapping("/drivers")
     public ResponseEntity<Boolean> saveDriverLocation(@Valid @RequestBody saveDriverLocationRequestDto saveDriverLocationRequestDto){
-         boolean response= locationService.saveDriverLocation(saveDriverLocationRequestDto.getDriverId(), saveDriverLocationRequestDto.getLatitude(), saveDriverLocationRequestDto.getLongitude());
+         boolean response= locationService.saveDriverLocation(
+                 saveDriverLocationRequestDto.getDriverId(),
+                 saveDriverLocationRequestDto.getLatitude(),
+                 saveDriverLocationRequestDto.getLongitude(),
+                 saveDriverLocationRequestDto.getBookingId(),
+                 saveDriverLocationRequestDto.getTrackingStage()
+         );
          return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -37,6 +43,16 @@ public class LocationController {
     @PostMapping("/drivers/{driverId}/offline")
     public ResponseEntity<Boolean> markDriverOffline(@PathVariable String driverId) {
         return new ResponseEntity<>(locationService.markDriverOffline(driverId), HttpStatus.OK);
+    }
+
+    @GetMapping("/drivers/{driverId}")
+    public ResponseEntity<DriverTrackingDto> getDriverLocation(@PathVariable String driverId) {
+        return ResponseEntity.ok(locationService.getDriverLocation(driverId));
+    }
+
+    @GetMapping("/bookings/{bookingId}/metrics")
+    public ResponseEntity<BookingTripMetricsDto> getBookingTripMetrics(@PathVariable String bookingId) {
+        return ResponseEntity.ok(locationService.getBookingTripMetrics(bookingId));
     }
 
 

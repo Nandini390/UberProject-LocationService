@@ -40,6 +40,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'redis.clients:jedis:7.2.0'
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:5.0.1")
+    implementation("org.springframework.kafka:spring-kafka:4.0.3")
 }
 
 tasks.named('test') {
