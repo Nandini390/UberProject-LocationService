@@ -68,7 +68,7 @@ public class RedisLocationServiceImpl implements LocationService{
     public List<DriverLocationDto> getNearbyDrivers(Double latitude, Double longitude) {
         GeoOperations<String,String> geoOps =stringRedisTemplate.opsForGeo();
         Distance distance = new Distance(searchRadius, Metrics.KILOMETERS);
-        Circle within = new Circle(new Point(latitude,longitude),distance);
+        Circle within = new Circle(new Point(longitude,latitude),distance);
         GeoResults<RedisGeoCommands.GeoLocation<String>> results = geoOps.radius(DRIVER_GEO_OPS_KEY,within);
 
         List<DriverLocationDto> drivers=new ArrayList<>();
